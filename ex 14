@@ -1,0 +1,70 @@
+#include <stdio.h>
+#define M 5  
+#define P 4  
+void allocate(int blocks[], int bsize, int procs[], int psize, int strategy) {
+    int alloc[P], temp[M];
+    for (int i = 0; i < psize; i++) alloc[i] = -1;
+    for (int i = 0; i < bsize; i++) temp[i] = blocks[i];
+    for (int i = 0; i < psize; i++) {
+        int idx = -1;
+        for (int j = 0; j < bsize; j++) {
+            if (temp[j] >= procs[i]) {
+                if (strategy == 1) { // First Fit
+                    idx = j; break;
+                }
+                if (strategy == 2 && (idx == -1 || temp[j] < temp[idx])) // Best Fit
+                    idx = j;
+                if (strategy == 3 && (idx == -1 || temp[j] > temp[idx])) // Worst Fit
+                    idx = j;
+            }
+        }
+        if (idx != -1) {
+            alloc[i] = idx;
+            temp[idx] -= procs[i];
+        }
+    }
+    printf("\nProcess No\tSize\tBlock No\n");
+    for (int i = 0; i < psize; i++) {
+        printf("%d\t\t%d\t", i + 1, procs[i]);
+        if (alloc[i] != -1)
+            printf("%d\n", alloc[i] + 1);
+        else
+            printf("Not Allocated\n");
+    }
+}
+int main() {
+    int blocks[M] = {100, 500, 200, 300, 600};
+    int processes[P] = {212, 417, 112, 426};
+
+    printf("First Fit Allocation:");
+    allocate(blocks, M, processes, P, 1);
+
+    printf("\nBest Fit Allocation:");
+    allocate(blocks, M, processes, P, 2);
+
+    printf("\nWorst Fit Allocation:");
+    allocate(blocks, M, processes, P, 3);
+
+    return 0;
+}
+OUT PUT:
+First Fit Allocation:
+Process No      Size    Block No
+1               212     2
+2               417     5
+3               112     2
+4               426     Not Allocated
+
+Best Fit Allocation:
+Process No      Size    Block No
+1               212     4
+2               417     2
+3               112     3
+4               426     5
+
+Worst Fit Allocation:
+Process No      Size    Block No
+1               212     5
+2               417     2
+3               112     5
+4               426     Not Allocated
