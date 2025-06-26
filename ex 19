@@ -1,0 +1,70 @@
+#include <stdio.h>
+#include <string.h>
+#define MAX 10
+char files[MAX][20];
+int count = 0;
+void createFile()
+ {
+    char name[20];
+    printf("Enter file name: ");
+    scanf("%s", name);
+    for (int i = 0; i < count; i++)
+	 {
+        if (strcmp(name, files[i]) == 0)
+		 {
+            printf("File already exists.\n");
+            return;
+        }
+    }
+    strcpy(files[count++], name);
+    printf("File created.\n");
+}
+void deleteFile() 
+{
+    char name[20];
+    printf("Enter file name to delete: ");
+    scanf("%s", name);
+    for (int i = 0; i < count; i++)
+	 {
+        if (strcmp(name, files[i]) == 0)
+		 {
+            for (int j = i; j < count - 1; j++)
+                strcpy(files[j], files[j + 1]);
+            count--;
+            printf("File deleted.\n");
+            return;
+        }
+    }
+    printf("File not found.\n");
+}
+void listFiles()
+ {
+    if (count == 0) 
+	{
+        printf("Directory is empty.\n");
+        return;
+    }
+    printf("Files:\n");
+    for (int i = 0; i < count; i++)
+        printf("%s\n", files[i]);
+}
+int main() 
+{
+    int choice;
+    do
+	 {
+        printf("\n1. Create\n2. Delete\n3. List\n4. Exit\nChoose: ");
+        scanf("%d", &choice);
+        switch (choice) {
+            case 1: createFile(); break;
+            case 2: deleteFile(); break;
+            case 3: listFiles(); break;
+        }
+    } while (choice != 4);
+    return 0;
+}
+ OUT PUT:'1. Create
+2. Delete
+3. List
+4. Exit
+Choose: 4
