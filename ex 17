@@ -1,0 +1,36 @@
+#include <stdio.h>
+#include <stdlib.h>
+typedef struct
+ {
+    int id;
+    char name[20];
+    float salary;
+} Employee;
+
+int main()
+ {
+    FILE *fp;
+    Employee e;
+    int pos;
+    fp = fopen("emp.dat", "wb+");
+    for (int i = 0; i < 3; i++) 
+	{
+        printf("Enter ID, Name, Salary: ");
+        scanf("%d %s %f", &e.id, e.name, &e.salary);
+        fwrite(&e, sizeof(Employee), 1, fp);
+    }
+    printf("\nEnter record number to read (0-2): ");
+    scanf("%d", &pos);
+    fseek(fp, pos * sizeof(Employee), SEEK_SET);
+    fread(&e, sizeof(Employee), 1, fp);
+    printf("ID: %d, Name: %s, Salary: %.2f\n", e.id, e.name, e.salary);
+    fclose(fp);
+    return 0;
+}
+OUT PUT:
+Enter ID, Name, Salary: 12233  KDGHBJ  40000
+Enter ID, Name, Salary: 15567  HEIHJJ 398768
+Enter ID, Name, Salary: 12433 JGHJRJHF 46666
+
+Enter record number to read (0-2): 4
+ID: 12433, Name: JGHJRJHF, Salary: 4
