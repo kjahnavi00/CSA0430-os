@@ -1,0 +1,64 @@
+#include <stdio.h>
+
+#define MAX 10
+
+typedef struct {
+    int id, bt, at, prio, rt;
+} Process;
+
+int main() {
+    int n, completed = 0, time = 0, min_prio;
+    Process p[MAX];
+    int shortest = -1;
+
+    printf("Enter number of processes: ");
+    scanf("%d", &n);
+
+    printf("Enter Arrival Time, Burst Time, and Priority (lower = higher priority):\n");
+    for (int i = 0; i < n; i++) {
+        p[i].id = i + 1;
+        printf("P%d: ", p[i].id);
+        scanf("%d %d %d", &p[i].at, &p[i].bt, &p[i].prio);
+        p[i].rt = p[i].bt;
+    }
+
+    printf("\nGantt Chart:\n");
+    while (completed < n) {
+        shortest = -1;
+        min_prio = 999;
+
+        for (int i = 0; i < n; i++) {
+            if (p[i].at <= time && p[i].rt > 0 && p[i].prio < min_prio) {
+                min_prio = p[i].prio;
+                shortest = i;
+            }
+        }
+
+        if (shortest == -1) {
+            time++;
+            continue;
+        }
+
+        printf("| P%d ", p[shortest].id);
+        p[shortest].rt--;
+        time++;
+
+        if (p[shortest].rt == 0) {
+            completed++;
+            int wt = time - p[shortest].at - p[shortest].bt;
+            int tat = time - p[shortest].at;
+            printf("(C:%d)", time);
+            printf(" -> WT: %d, TAT: %d\n", wt, tat);
+        }
+    }
+
+    return 0;
+}
+OUT PUT:
+Enter number of processes: 2
+Enter Arrival Time, Burst Time, and Priority (lower = higher priority):
+P1: 5
+10
+11
+P2: 12
+15
