@@ -30,3 +30,5 @@ int main() {
     printf("File copied successfully.\n");
     return 0;
 }
+OUTPUT:
+Source file open error: No such file or directory
