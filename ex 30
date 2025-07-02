@@ -1,0 +1,55 @@
+#include <stdio.h>
+#include <pthread.h>
+#include <unistd.h>
+
+// Thread function
+void* threadFunction(void* arg) {
+    int id = *(int*)arg;
+    printf("Thread %d: Started.\n", id);
+    
+    if (id == 1) {
+        // Demonstrating pthread_exit()
+        printf("Thread %d: Exiting using pthread_exit.\n", id);
+        pthread_exit("Thread 1 exited.");
+    }
+
+    sleep(1);  // Simulate work
+    printf("Thread %d: Finished.\n", id);
+    return "Thread finished.";
+}
+
+int main() {
+    pthread_t t1, t2;
+    int id1 = 1, id2 = 2;
+    void* threadResult;
+
+    // (i) Create threads
+    pthread_create(&t1, NULL, threadFunction, &id1);
+    pthread_create(&t2, NULL, threadFunction, &id2);
+
+    // (ii) Join threads
+    pthread_join(t1, &threadResult);
+    printf("Main: Thread 1 joined. Return message: %s\n", (char*)threadResult);
+
+    pthread_join(t2, &threadResult);
+    printf("Main: Thread 2 joined. Return message: %s\n", (char*)threadResult);
+
+    // (iii) Compare threads (pthread_equal)
+    if (pthread_equal(t1, t2))
+        printf("Main: Threads t1 and t2 are equal.\n");
+    else
+        printf("Main: Threads t1 and t2 are NOT equal.\n");
+
+    // (iv) Main thread exits
+    printf("Main: Exiting using pthread_exit.\n");
+    pthread_exit(NULL);  // Keeps the process alive if threads are still running
+}
+OUTPUT:
+Thread 1: Started.
+Thread 1: Exiting using pthread_exit.
+Thread 2: Started.
+Thread 2: Finished.
+Main: Thread 1 joined. Return message: Thread 1 exited.
+Main: Thread 2 joined. Return message: Thread finished.
+Main: Threads t1 and t2 are NOT equal.
+Main: Exiting using pthread_exit.
