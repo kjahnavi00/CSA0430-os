@@ -1,0 +1,134 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+void createFile(const char *filename) {
+    FILE *fp = fopen(filename, "w");
+    if (fp == NULL) {
+        perror("Error creating file");
+        return;
+    }
+    printf("File '%s' created successfully.\n", filename);
+    fclose(fp);
+}
+
+void writeFile(const char *filename) {
+    FILE *fp = fopen(filename, "a");
+    if (fp == NULL) {
+        perror("Error opening file for writing");
+        return;
+    }
+
+    char data[100];
+    printf("Enter data to write: ");
+    getchar(); // consume leftover newline
+    fgets(data, sizeof(data), stdin);
+    fputs(data, fp);
+
+    printf("Data written to file '%s'.\n", filename);
+    fclose(fp);
+}
+
+void readFile(const char *filename) {
+    FILE *fp = fopen(filename, "r");
+    if (fp == NULL) {
+        perror("Error opening file for reading");
+        return;
+    }
+
+    char ch;
+    printf("Contents of '%s':\n", filename);
+    while ((ch = fgetc(fp)) != EOF) {
+        putchar(ch);
+    }
+    fclose(fp);
+}
+
+void renameFile(const char *oldName, const char *newName) {
+    if (rename(oldName, newName) == 0) {
+        printf("File renamed from '%s' to '%s'.\n", oldName, newName);
+    } else {
+        perror("Error renaming file");
+    }
+}
+
+void deleteFile(const char *filename) {
+    if (remove(filename) == 0) {
+        printf("File '%s' deleted successfully.\n", filename);
+    } else {
+        perror("Error deleting file");
+    }
+}
+
+int main() {
+    int choice;
+    char filename[100], newName[100];
+
+    while (1) {
+        printf("\n--- File Management Menu ---\n");
+        printf("1. Create File\n");
+        printf("2. Write to File\n");
+        printf("3. Read File\n");
+        printf("4. Rename File\n");
+        printf("5. Delete File\n");
+        printf("6. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter filename to create: ");
+                scanf("%s", filename);
+                createFile(filename);
+                break;
+            case 2:
+                printf("Enter filename to write to: ");
+                scanf("%s", filename);
+                writeFile(filename);
+                break;
+            case 3:
+                printf("Enter filename to read: ");
+                scanf("%s", filename);
+                readFile(filename);
+                break;
+            case 4:
+                printf("Enter current filename: ");
+                scanf("%s", filename);
+                printf("Enter new filename: ");
+                scanf("%s", newName);
+                renameFile(filename, newName);
+                break;
+            case 5:
+                printf("Enter filename to delete: ");
+                scanf("%s", filename);
+                deleteFile(filename);
+                break;
+            case 6:
+                printf("Exiting program.\n");
+                exit(0);
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+
+    return 0;
+}
+OUTPUT:
+ File Management Menu ---
+1. Create File
+2. Write to File
+3. Read File
+4. Rename File
+5. Delete File
+6. Exit
+Enter your choice: 1
+Enter filename to create: jhet
+File 'jhet' created successfully.
+
+--- File Management Menu ---
+1. Create File
+2. Write to File
+3. Read File
+4. Rename File
+5. Delete File
+6. Exit
