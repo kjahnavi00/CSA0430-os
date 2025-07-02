@@ -1,0 +1,73 @@
+#include <stdio.h>
+
+#define MAX_FRAMES 10
+#define MAX_REFERENCES 50
+
+int main() {
+    int frames[MAX_FRAMES], refStr[MAX_REFERENCES];
+    int frameCount, refCount;
+    int pageFaults = 0, index = 0;
+
+    // Initialize frames to -1 (empty)
+    for (int i = 0; i < MAX_FRAMES; i++) {
+        frames[i] = -1;
+    }
+
+    // Input
+    printf("Enter number of frames: ");
+    scanf("%d", &frameCount);
+
+    printf("Enter number of page references: ");
+    scanf("%d", &refCount);
+
+    printf("Enter the page reference string:\n");
+    for (int i = 0; i < refCount; i++) {
+        scanf("%d", &refStr[i]);
+    }
+
+    // FIFO Page Replacement
+    for (int i = 0; i < refCount; i++) {
+        int found = 0;
+
+        // Check if page is already in a frame
+        for (int j = 0; j < frameCount; j++) {
+            if (frames[j] == refStr[i]) {
+                found = 1;
+                break;
+            }
+        }
+
+        // If not found (page fault), replace oldest page
+        if (!found) {
+            frames[index] = refStr[i];
+            index = (index + 1) % frameCount; // move in circular fashion
+            pageFaults++;
+        }
+
+        // Display current frame status
+        printf("After referencing %d: ", refStr[i]);
+        for (int j = 0; j < frameCount; j++) {
+            if (frames[j] != -1)
+                printf("%d ", frames[j]);
+            else
+                printf("- ");
+        }
+        if (!found)
+            printf("(Page Fault)");
+        printf("\n");
+    }
+
+    printf("\nTotal Page Faults = %d\n", pageFaults);
+
+    return 0;
+}
+OUTPUT:
+Enter number of frames: 2
+Enter number of page references: 2
+Enter the page reference string:
+2
+2
+After referencing 2: 2 - (Page Fault)
+After referencing 2: 2 -
+
+Total Page Faults = 1
