@@ -1,0 +1,109 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+int mutex = 1;           // Binary semaphore for critical section
+int full = 0;            // Counts filled slots
+int empty = 5;           // Counts empty slots (size of buffer = 5)
+int buffer[5];           // Shared buffer
+int in = 0, out = 0;     // Buffer pointers
+
+// Wait operation
+int wait(int s) {
+    return (--s);
+}
+
+// Signal operation
+int signal(int s) {
+    return (++s);
+}
+
+void producer() {
+    if (mutex == 1 && empty != 0) {
+        mutex = wait(mutex);
+        full = signal(full);
+        empty = wait(empty);
+
+        // Produce an item
+        int item = rand() % 100;
+        buffer[in] = item;
+        printf("Producer produced item: %d\n", item);
+        in = (in + 1) % 5;
+
+        mutex = signal(mutex);
+    } else {
+        printf("Buffer is full! Producer is waiting...\n");
+    }
+}
+
+void consumer() {
+    if (mutex == 1 && full != 0) {
+        mutex = wait(mutex);
+        full = wait(full);
+        empty = signal(empty);
+
+        // Consume an item
+        int item = buffer[out];
+        printf("Consumer consumed item: %d\n", item);
+        out = (out + 1) % 5;
+
+        mutex = signal(mutex);
+    } else {
+        printf("Buffer is empty! Consumer is waiting...\n");
+    }
+}
+
+int main() {
+    int choice;
+
+    while (1) {
+        printf("\n--- Menu ---\n");
+        printf("1. Produce\n");
+        printf("2. Consume\n");
+        printf("3. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                producer();
+                break;
+            case 2:
+                consumer();
+                break;
+            case 3:
+                printf("Exiting simulation.\n");
+                exit(0);
+            default:
+                printf("Invalid choice!\n");
+        }
+    }
+
+    return 0;
+}
+OUTPUT:
+ Menu ---
+1. Produce
+2. Consume
+3. Exit
+Enter your choice: 2
+Buffer is empty! Consumer is waiting...
+
+--- Menu ---
+1. Produce
+2. Consume
+3. Exit
+Enter your choice: 1
+Producer produced item: 41
+
+--- Menu ---
+1. Produce
+2. Consume
+3. Exit
+Enter your choice: 0
+Invalid choice!
+
+--- Menu ---
+1. Produce
+2. Consume
+3. Exit
