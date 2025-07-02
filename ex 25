@@ -1,0 +1,84 @@
+#include <stdio.h>
+#include <fcntl.h>       // For fcntl(), open()
+#include <unistd.h>      // For lseek(), close()
+#include <sys/stat.h>    // For stat()
+#include <dirent.h>      // For opendir(), readdir()
+#include <string.h>
+#include <stdlib.h>
+
+int main() {
+    int fd;
+    char *filename = "demo_file.txt";
+    char buffer[50];
+    struct stat fileStat;
+
+    // -------------------------------
+    // 1. Create and open a file
+    // -------------------------------
+    fd = open(filename, O_CREAT | O_RDWR, 0644);
+    if (fd == -1) {
+        perror("open");
+        return 1;
+    }
+    write(fd, "UNIX I/O system call demo", 25);
+
+    // -------------------------------
+    // 2. Use fcntl to get file flags
+    // -------------------------------
+    int flags = fcntl(fd, F_GETFL);
+    if (flags == -1) {
+        perror("fcntl");
+    } else {
+        printf("fcntl: File opened with flags: %d\n", flags);
+    }
+
+    // -------------------------------
+    // 3. Use lseek to move file pointer
+    // -------------------------------
+    off_t pos = lseek(fd, 0, SEEK_SET); // move to beginning
+    if (pos == -1) {
+        perror("lseek");
+    } else {
+        read(fd, buffer, sizeof(buffer) - 1);
+        buffer[25] = '\0';
+        printf("lseek: Read content from file: \"%s\"\n", buffer);
+    }
+
+    // -------------------------------
+    // 4. Use stat to get file info
+    // -------------------------------
+    if (stat(filename, &fileStat) == -1) {
+        perror("stat");
+    } else {
+        printf("\nstat: File size: %ld bytes\n", fileStat.st_size);
+        printf("      Last modified: %ld\n", fileStat.st_mtime);
+        printf("      Inode number: %ld\n", fileStat.st_ino);
+    }
+
+    // -------------------------------
+    // 5. Use opendir and readdir to list directory
+    // -------------------------------
+    DIR *dir;
+    struct dirent *entry;
+    dir = opendir(".");
+    if (dir == NULL) {
+        perror("opendir");
+        return 1;
+    }
+
+    printf("\nDirectory listing (using readdir):\n");
+    while ((entry = readdir(dir)) != NULL) {
+        printf("  %s\n", entry->d_name);
+    }
+
+    closedir(dir);
+    close(fd);
+    unlink(filename);  // clean up test file
+
+    return 0;
+}
+OUTPUT:
+File 'example.txt' created and opened for writing.
+Wrote 42 bytes to the file.
+Read 42 bytes from the file: "Hello, this is a system call demo in UNIX!"
+File 'example.txt' deleted successfully.
